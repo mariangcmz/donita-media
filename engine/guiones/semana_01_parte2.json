@@ -1,0 +1,16 @@
+[
+ {"dia": "domingo", "id": "catalogo-parte2",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "text": ["Lo prometido,", "mija: así armé", "mi catálogo."], "hl": "mi catálogo."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Empieza con", "3 tablas: clientas,", "pedidos y pagos."], "hl": "pedidos y pagos."},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Cada pedido sabe", "quién lo pidió", "y si ya pagó."], "hl": "y si ya pagó."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Y Notion te lo", "enseña bonito.", "Adiós libreta."], "hl": "Adiós libreta."}
+  ]},
+ {"dia": "miercoles", "id": "super-parte2",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "text": ["Lo prometido:", "la lista del súper", "que se arma sola."], "hl": "que se arma sola."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Paso 1: una lista", "de básicos que", "se repite sola."], "hl": "se repite sola."},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Paso 2: si algo", "se acaba, lo agregas", "en ese momento."], "hl": "en ese momento."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["El día del súper", "ya está lista.", "Cero soya extra."], "hl": "Cero soya extra."}
+  ]}
+]

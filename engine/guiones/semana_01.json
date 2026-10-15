@@ -1,0 +1,51 @@
+[
+ {"dia": "lunes", "id": "no-programar",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "text": ["No necesitas", "saber programar."], "hl": "saber programar."},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Necesitas saber", "qué te cansa", "cada semana."], "hl": "qué te cansa"},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Eso que repites", "es lo que", "se automatiza."], "hl": "se automatiza."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Cuéntame qué", "te cansa a ti", "en comentarios."], "hl": "en comentarios."}
+  ]},
+ {"dia": "martes", "id": "make-fiasco",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Iba a automatizar", "mis estadísticas", "con Make."], "hl": "con Make."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "props": ["laptop"], "text": ["Se acabaron los", "créditos gratis", "el primer día."], "hl": "el primer día.", "note": "(literal)"},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Así que me mudé", "a Supabase", "sin llorar. Casi."], "hl": "Casi."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Hoy junta datos", "de 6 marcas", "sola, cada día."], "hl": "sola, cada día."}
+  ]},
+ {"dia": "miércoles", "id": "catalogo",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Mija, ¿sigues", "anotando pedidos", "en la libreta?"], "hl": "en la libreta?", "note": "(la que se moja)"},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["¿Quién pagó?", "¿Quién debe?", "Ni idea."], "hl": "Ni idea."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Ahora todo vive", "en una base", "de datos."], "hl": "de datos."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["laptop"], "text": ["Y la veo bonita", "en Notion.", "Mañana te enseño."], "hl": "en Notion."}
+  ]},
+ {"dia": "jueves", "id": "tarjeta-google",
+  "escenas": [
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Le puse mi", "tarjeta a Google", "y me dio el patatús."], "hl": "y me dio el patatús."},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["\"Pago por uso\"", "suena a \"me van", "a dejar en ceros\"."], "hl": "a dejar en ceros\"."},
+   {"head": "head_emocionada", "arm": "arm_senala", "text": ["Truco: ponle una", "alerta de", "presupuesto."], "hl": "presupuesto."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Te avisa antes", "del susto.", "De nada, mija."], "hl": "De nada, mija."}
+  ]},
+ {"dia": "viernes", "id": "detras-doñita",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["7 videos a la", "semana. Yo sola.", "¿Cómo?"], "hl": "¿Cómo?"},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Spoiler:", "no los hago", "yo."], "hl": "yo."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Se escriben, se", "animan y se", "publican solos."], "hl": "publican solos."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Esta doñita", "es un robot", "con chongo."], "hl": "con chongo.", "note": "(con cariño)"}
+  ]},
+ {"dia": "sábado", "id": "lista-super",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Llegar al súper", "y no acordarte", "qué faltaba."], "hl": "qué faltaba."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Y comprar", "la tercera salsa", "de soya."], "hl": "de soya."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Ahora la lista", "se arma sola."], "hl": "se arma sola."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Mañana te enseño", "cómo, sin apps", "caras."], "hl": "caras."}
+  ]},
+ {"dia": "domingo", "id": "recordatorios",
+  "escenas": [
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Pagar la luz,", "la cita, la junta", "de la escuela..."], "hl": null},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Todo en la cabeza", "de una sola", "persona."], "hl": "de una sola"},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Hasta que los", "recordatorios", "llegan solos."], "hl": "llegan solos."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Tu memoria", "descansa.", "Tú también, mija."], "hl": "Tú también, mija."}
+  ]}
+]
