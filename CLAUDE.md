@@ -27,6 +27,12 @@ Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
 opcionales: `note` (notita Kalam corta), `props` (laptop | nodes | mug), `shake` (true en escenas de estrés).
 Arco típico: 1) gancho/dolor 2) estrés o giro 3) solución (señala + nodes) 4) cierre (taza + mug).
 
+## Animación (skill animacion-cartoon-cutout)
+La actuación vive en `performance()` de `make_video.py`: anticipación, squash & stretch con volumen constante,
+follow-through (cabeza y manga con resorte), lean por emoción, parpadeo (`pieces/*_blink.png`, se regeneran con
+`make_blinks.py`) y miradas. Antes de publicar cambios al rig corre
+`python3 qa_sheet.py guiones/semana_XX.json <id> /tmp/qa.png` y revisa la hoja (poses + siluetas + volumen ≤ 0.05).
+
 ## Reglas de marca (no negociables)
 - Voz: mujer mexicana 35-40, cálida, irónica, cercana. "mija" a veces, no siempre. Nunca "pa'", siempre "para".
 - Cero lenguaje corporativo/de agencia: nada de "potencia", "revolucionario", "descubre", "sumérgete", "desbloquea", "transforma tu vida".

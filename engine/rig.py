@@ -56,7 +56,8 @@ HEAD_S = 1.32 * G
 ARM_S = 1.5 * G
 
 def character(canvas, t, x, y, head='head_cansada', head_pop=0.0, arm_r='arm_baja_taza',
-              arm_l='arm_manga_izq', arm_r_ang=0.0, arm_l_ang=0.0, head_ang=0.0, boil_seed=0, shake=0.0):
+              arm_l='arm_manga_izq', arm_r_ang=0.0, arm_l_ang=0.0, head_ang=0.0, boil_seed=0, shake=0.0,
+              blink=False, head_dx=0.0, shadow=True):
     """x,y = punto entre los pies. t en segundos.
     Convención: arm_l (lado izquierdo de la imagen) usa piezas *_izq (espejo); arm_r usa las originales.
     Así siempre queda un brazo izquierdo y uno derecho."""
@@ -67,8 +68,9 @@ def character(canvas, t, x, y, head='head_cansada', head_pop=0.0, arm_r='arm_baj
     bx_, by_, br_ = BOIL[boil_seed % 3]
     bw = body.width
     by = y - body.height * breath
-    d = ImageDraw.Draw(canvas)
-    d.ellipse((x - bw * 0.55, y - 18, x + bw * 0.55, y + 22), fill=(74, 46, 39, 38))
+    if shadow:
+        d = ImageDraw.Draw(canvas)
+        d.ellipse((x - bw * 0.55, y - 18, x + bw * 0.55, y + 22), fill=(74, 46, 39, 38))
     neck = (x + shake, by + 0.035 * body.height)
     sh_r = (x + bw * 0.33, by + 0.12 * body.height)
     sh_l = (x - bw * 0.33, by + 0.12 * body.height)
@@ -80,10 +82,11 @@ def character(canvas, t, x, y, head='head_cansada', head_pop=0.0, arm_r='arm_baj
     if arm_l:
         a = piece(arm_l, ARM_S)
         paste_rot(canvas, a, ARM_PIVOT[arm_l](a), (sh_l[0] + bx_, sh_l[1]), arm_l_ang + br_)
-    hd = piece(head, HEAD_S)
-    sx = 1 + 0.10 * head_pop; sy = 1 - 0.08 * head_pop
+    hd = piece(head + ('_blink' if blink else ''), HEAD_S)
+    # squash & stretch con volumen constante (sx = 1/sqrt(sy))
+    sy = 1 - 0.08 * head_pop; sx = 1 / math.sqrt(sy)
     bob = 3 * math.sin(t * 2 * math.pi / 2.6)
-    paste_rot(canvas, hd, (hd.width / 2, hd.height * 0.93), (neck[0] + by_, neck[1] + bob + 22),
+    paste_rot(canvas, hd, (hd.width / 2, hd.height * 0.93), (neck[0] + by_ + head_dx, neck[1] + bob + 22),
               head_ang + br_, sx=sx, sy=sy)
 
 # pivote (hombro) en cada pieza de brazo, como fracción del tamaño
@@ -98,3 +101,19 @@ ARM_PIVOT = {
     'arm_manga_izq':     lambda a: (a.width * 0.58, a.height * 0.10),
 }
 
+
+
+# ---- Transformación global del personaje (squash/stretch, lean, hop) -------------
+def composite_transformed(canvas, layer, foot, sx=1.0, sy=1.0, angle=0.0, dy=0.0):
+    """Compone `layer` (mismo tamaño que canvas) escalado/rotado alrededor de `foot`.
+    Escala primero y luego rota (ángulo en grados, positivo = antihorario en pantalla)."""
+    if abs(sx - 1) < 1e-4 and abs(sy - 1) < 1e-4 and abs(angle) < 1e-3 and abs(dy) < 0.05:
+        canvas.alpha_composite(layer); return
+    th = math.radians(angle); c, s_ = math.cos(th), math.sin(th)
+    fx, fy = foot; ox, oy = fx, fy + dy
+    a, b = c / sx, -s_ / sx
+    d_, e = s_ / sy, c / sy
+    cc = fx - a * ox - b * oy
+    f = fy - d_ * ox - e * oy
+    out = layer.transform(layer.size, Image.AFFINE, (a, b, cc, d_, e, f), resample=Image.BICUBIC)
+    canvas.alpha_composite(out)

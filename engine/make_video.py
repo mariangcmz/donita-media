@@ -78,6 +78,77 @@ def draw_nodes(c, ox, oy, lt):
         d.ellipse((ox + x - r - 5, oy + y - r - 5, ox + x + r + 5, oy + y + r + 5), fill=(255, 255, 255))
         d.ellipse((ox + x - r, oy + y - r, ox + x + r, oy + y + r), fill=SALMON, outline=ESPRESSO, width=5)
 
+# ---------------- Actuación (principios de animación) ----------------
+def spring(tl, amp, k=6.0, w=16.0, phase=0.0):
+    """Resorte amortiguado para follow-through: 0 antes de tl=0."""
+    if tl < 0: return 0.0
+    return amp * math.exp(-k * tl) * math.sin(w * tl + phase)
+
+def _hash(n):
+    return (math.sin(n * 12.9898) * 43758.5453) % 1.0
+
+def is_blinking(t, lt):
+    """Parpadeo cada ~2.8-4.4 s (semilla fija), 4 frames cerrados; nunca durante el pop de entrada."""
+    if lt < 0.35: return False
+    k = int(t // 3.6)
+    for kk in (k - 1, k):
+        tb = kk * 3.6 + 0.4 + 1.6 * _hash(kk + 7)
+        if 0 <= t - tb < 4 / FPS: return True
+    return False
+
+def glance(t, lt):
+    """Miradas a los lados: holds de ~2.2 s con transición de 0.15 s (acción secundaria)."""
+    if lt < 0.9: return 0.0
+    seg = int(t // 2.2); targets = [0, -5, 0, 4]
+    cur = targets[seg % 4]; prev = targets[(seg - 1) % 4]
+    u = ease_io(((t % 2.2)) / 0.15)
+    return prev + (cur - prev) * u
+
+def performance(sc, t, lt):
+    """Devuelve la pose del personaje en este frame según la emoción de la escena."""
+    emo = sc['head']; arm = sc['arm_r']
+    sy, dy = 1.0, 0.0
+    land = 0.0                        # momento en que el cuerpo 'aterriza' (para follow-through)
+    if emo == 'head_emocionada':      # anticipación (squash) -> brinco (stretch) -> aterriza (squash) -> asienta
+        if lt < 0.12:   sy = 1 - 0.07 * ease_io(lt / 0.12)
+        elif lt < 0.26: u = ease_io((lt - 0.12) / 0.14); sy = 0.93 + 0.13 * u; dy = -18 * u
+        elif lt < 0.40: u = (lt - 0.26) / 0.14; sy = 1.06 - 0.06 * u; dy = -18 * (1 - u * u)
+        else:           tl = lt - 0.40; sy = 1 - 0.06 * math.exp(-7 * tl) * math.cos(13 * tl)
+        land = 0.40; lean_target = 2.0
+    elif emo == 'head_estres':        # se tensa de golpe (squash corto) y se queda rígida
+        sy = 1 - 0.05 * math.exp(-9 * lt) * math.cos(18 * lt) - 0.015 * ease_io(lt / 0.2)
+        land = 0.05; lean_target = 0.0
+    else:                             # cansada: suspiro lento, se hunde y se ladea
+        sy = 1 - 0.035 * math.sin(min(1, lt / 0.9) * math.pi) - 0.01 * ease_io(lt / 0.9)
+        land = 0.45; lean_target = -2.0
+    sx = 1 / math.sqrt(sy)            # volumen constante
+    lean = lean_target * ease_io(lt / 0.5)
+    tl = lt - land
+    # cabeza: llega después que el cuerpo (overlapping) y se asienta con resorte (follow-through)
+    head_lean = lean_target * 1.6 * ease_io((lt - 0.1) / 0.5)
+    if sc.get('shake'):
+        head_ang = 5 * math.sin(lt * 26) * math.exp(-lt * 4)
+    else:
+        head_ang = head_lean + spring(tl, 4.0 if emo == 'head_emocionada' else 2.5) + 1.2 * math.sin(t * 1.1)
+    # brazo con gesto: anticipación hacia abajo -> sube con overshoot -> hold con leve vaivén
+    if arm == 'arm_alza_taza':
+        base = 18
+        if lt < 0.15: arm_ang = base - 6 - 6 * ease_io(lt / 0.15)
+        else:         arm_ang = base - 12 + 12 * ease_out_back((lt - 0.15) / 0.45)
+        arm_ang += 1.2 * math.sin(t * 1.9)
+    elif arm == 'arm_senala':
+        base = -28   # mano a la altura del hombro: deja aire entre brazo y torso (silueta)
+        if lt < 0.15: arm_ang = base - 5 * ease_io(lt / 0.15)
+        else:         arm_ang = base - 5 + 5 * ease_out_back((lt - 0.15) / 0.4)
+        arm_ang += 2 * math.sin(t * 2.2)
+    else:
+        arm_ang = 1.0 * math.sin(t * 1.5)
+    # manga: cuelga y sigue el movimiento del cuerpo con retraso
+    sleeve = spring(tl - 0.06, 6.0, k=5, w=13) - lean * 0.8 - 1.2 * math.sin(t * 1.4)
+    pop = math.sin(lt / 0.25 * math.pi) * (1 - lt / 0.25) if lt < 0.25 else 0.0
+    return dict(sx=sx, sy=sy, dy=dy, lean=lean, head_ang=head_ang, arm=arm_ang, sleeve=sleeve,
+                pop=pop, blink=is_blinking(t, lt), head_dx=glance(t, lt))
+
 def frame(fi):
     t = fi / FPS
     sc = next(s for s in SCENES if s['t0'] <= t < s['t1'] + 1e-9)
@@ -91,21 +162,17 @@ def frame(fi):
         paste_rot(c, lp, (lp.width / 2, lp.height / 2), (200, 1230 + 6 * math.sin(t * 1.6)), -6 + 1.5 * math.sin(t * 1.2), sx=k, sy=k)
     if 'nodes' in sc['props']:
         draw_nodes(c, 740, 690, lt)
-    # cabeza: pop al cambiar de expresión
-    pop = max(0.0, 1 - lt / 0.25) * math.sin(lt / 0.25 * math.pi) if lt < 0.25 else 0.0
-    arm_ang = 0.0
-    if sc['arm_r'] == 'arm_alza_taza':
-        arm_ang = 15 + 8 * (1 - ease_out_back(lt / 0.6)) + 2 * math.sin(t * 2.2)
-    if sc['arm_r'] == 'arm_senala':
-        arm_ang = -40 + 3 * math.sin(t * 2.4)
-    if sc.get('shake'):  # un solo "resoplido" al entrar, luego quieta
-        head_ang = 5 * math.sin(lt * 28) * math.exp(-lt * 4)
-    else:
-        head_ang = 2 * math.sin(t * 1.3)
-    # gesto en el lado izquierdo de la imagen (pieza espejo), manga en el derecho
+    acting = performance(sc, t, lt)
+    # sombra en el piso: se encoge cuando brinca
+    sh_k = 1 - min(0.35, -acting['dy'] / 80)
+    ImageDraw.Draw(c).ellipse((540 - 230 * sh_k, 1782, 540 + 230 * sh_k, 1822), fill=(74, 46, 39, int(38 * sh_k)))
+    layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     # brazo con gesto (pieza original) en el lado izq de la imagen; manga espejo en el derecho; ambos al frente
-    character(c, t, 540, 1800, head=sc['head'], head_pop=pop, arm_l=sc['arm_r'], arm_r='arm_manga_izq',
-              arm_l_ang=arm_ang, arm_r_ang=-1.5 * math.sin(t * 1.8), head_ang=head_ang, boil_seed=boil)
+    character(layer, t, 540, 1800, head=sc['head'], head_pop=acting['pop'], arm_l=sc['arm_r'], arm_r='arm_manga_izq',
+              arm_l_ang=acting['arm'], arm_r_ang=acting['sleeve'], head_ang=acting['head_ang'],
+              head_dx=acting['head_dx'], blink=acting['blink'], boil_seed=boil, shadow=False)
+    composite_transformed(c, layer, (540, 1800), sx=acting['sx'], sy=acting['sy'],
+                          angle=acting['lean'], dy=acting['dy'])
     if 'mug' in sc['props']:
         m = piece('mug_mascota', 1.9)
         hop = abs(math.sin(t * 3.5)) * 26
