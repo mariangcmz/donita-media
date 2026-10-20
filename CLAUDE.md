@@ -30,7 +30,7 @@ Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 - `arm` acepta lo de siempre: `arm_baja_taza` (taza al frente), `arm_alza_taza` (alza la taza), `arm_senala`;
   o en v2 también `brazo_recto` (brazo en reposo, sin taza).
 - Parpadeo v2: `python3 make_blinks_v2.py` (cansada y escéptica no parpadean: ya tienen párpado a media asta).
-- Los MP4 de `semana_01/` se quedan con el kit v1 (ya están programados en Metricool); no re-renderizar encima.
+- Los MP4 de `semana_01/` se quedan con el kit v1 (Metricool los toma de esas URLs); no re-renderizar encima sin que Mariana lo pida.
 
 ## Formato de guion (JSON)
 Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
