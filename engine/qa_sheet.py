@@ -19,8 +19,7 @@ for i, t in enumerate(times):
     sheet.paste(f.resize((tw, th)), (c * tw, r * th * 2))
     # silueta: render solo el personaje en negro
     layer = Image.new('RGBA', (mv.W, mv.H), (0, 0, 0, 0))
-    mv.character(layer, t, 540, 1800, head=s['head'], arm_l=s['arm_r'], arm_r='arm_manga_izq',
-                 arm_l_ang=a['arm'], arm_r_ang=a['sleeve'], head_ang=a['head_ang'], shadow=False)
+    mv.draw_character(layer, s, t, a, blink=False)
     sil = Image.new('RGB', (mv.W, mv.H), 'white'); sil.paste((0, 0, 0), mask=layer.split()[3])
     sheet.paste(sil.resize((tw, th)), (c * tw, r * th * 2 + th))
 sheet.save(out)

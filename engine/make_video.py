@@ -106,16 +106,16 @@ def glance(t, lt):
 
 def performance(sc, t, lt):
     """Devuelve la pose del personaje en este frame según la emoción de la escena."""
-    emo = sc['head']; arm = sc['arm_r']
+    emo = emo_kind(sc['head']); arm = gesture_kind(sc['arm_r'])
     sy, dy = 1.0, 0.0
     land = 0.0                        # momento en que el cuerpo 'aterriza' (para follow-through)
-    if emo == 'head_emocionada':      # anticipación (squash) -> brinco (stretch) -> aterriza (squash) -> asienta
+    if emo == 'emocionada':           # anticipación (squash) -> brinco (stretch) -> aterriza (squash) -> asienta
         if lt < 0.12:   sy = 1 - 0.07 * ease_io(lt / 0.12)
         elif lt < 0.26: u = ease_io((lt - 0.12) / 0.14); sy = 0.93 + 0.13 * u; dy = -18 * u
         elif lt < 0.40: u = (lt - 0.26) / 0.14; sy = 1.06 - 0.06 * u; dy = -18 * (1 - u * u)
         else:           tl = lt - 0.40; sy = 1 - 0.06 * math.exp(-7 * tl) * math.cos(13 * tl)
         land = 0.40; lean_target = 2.0
-    elif emo == 'head_estres':        # se tensa de golpe (squash corto) y se queda rígida
+    elif emo == 'tensa':              # se tensa de golpe (squash corto) y se queda rígida
         sy = 1 - 0.05 * math.exp(-9 * lt) * math.cos(18 * lt) - 0.015 * ease_io(lt / 0.2)
         land = 0.05; lean_target = 0.0
     else:                             # cansada: suspiro lento, se hunde y se ladea
@@ -129,15 +129,17 @@ def performance(sc, t, lt):
     if sc.get('shake'):
         head_ang = 5 * math.sin(lt * 26) * math.exp(-lt * 4)
     else:
-        head_ang = head_lean + spring(tl, 4.0 if emo == 'head_emocionada' else 2.5) + 1.2 * math.sin(t * 1.1)
+        head_ang = head_lean + spring(tl, 4.0 if emo == 'emocionada' else 2.5) + 1.2 * math.sin(t * 1.1)
     # brazo con gesto: anticipación hacia abajo -> sube con overshoot -> hold con leve vaivén
-    if arm == 'arm_alza_taza':
-        base = 18
-        if lt < 0.15: arm_ang = base - 6 - 6 * ease_io(lt / 0.15)
-        else:         arm_ang = base - 12 + 12 * ease_out_back((lt - 0.15) / 0.45)
+    v2 = KIT == 'v2'
+    if arm == 'alza':
+        # v1: alzar = ángulo positivo; v2 (brazo en el lado derecho): alzar = negativo
+        base, sg = (-25, -1) if v2 else (18, 1)
+        if lt < 0.15: arm_ang = base + sg * (-6 - 6 * ease_io(lt / 0.15))
+        else:         arm_ang = base + sg * (-12 + 12 * ease_out_back((lt - 0.15) / 0.45))
         arm_ang += 1.2 * math.sin(t * 1.9)
-    elif arm == 'arm_senala':
-        base = -28   # mano a la altura del hombro: deja aire entre brazo y torso (silueta)
+    elif arm == 'senala':
+        base = -6 if v2 else -28   # mano a la altura del hombro: deja aire entre brazo y torso (silueta)
         if lt < 0.15: arm_ang = base - 5 * ease_io(lt / 0.15)
         else:         arm_ang = base - 5 + 5 * ease_out_back((lt - 0.15) / 0.4)
         arm_ang += 2 * math.sin(t * 2.2)
@@ -148,6 +150,18 @@ def performance(sc, t, lt):
     pop = math.sin(lt / 0.25 * math.pi) * (1 - lt / 0.25) if lt < 0.25 else 0.0
     return dict(sx=sx, sy=sy, dy=dy, lean=lean, head_ang=head_ang, arm=arm_ang, sleeve=sleeve,
                 pop=pop, blink=is_blinking(t, lt), head_dx=glance(t, lt))
+
+def draw_character(layer, sc, t, acting, boil=0, blink=True):
+    """Dibuja a la doñita (kit v1 o v2 según DONITA_KIT) en `layer` con la pose de `performance()`."""
+    if KIT == 'v2':
+        character_v2(layer, t, 540, 1800, head=sc['head'], head_pop=acting['pop'], gesture=gesture_kind(sc['arm_r']),
+                     gesture_ang=acting['arm'], rest_ang=acting['sleeve'], head_ang=acting['head_ang'],
+                     head_dx=acting['head_dx'], blink=blink and acting['blink'], boil_seed=boil)
+    else:
+        # brazo con gesto (pieza original) en el lado izq de la imagen; manga espejo en el derecho; ambos al frente
+        character(layer, t, 540, 1800, head=sc['head'], head_pop=acting['pop'], arm_l=sc['arm_r'], arm_r='arm_manga_izq',
+                  arm_l_ang=acting['arm'], arm_r_ang=acting['sleeve'], head_ang=acting['head_ang'],
+                  head_dx=acting['head_dx'], blink=blink and acting['blink'], boil_seed=boil, shadow=False)
 
 def frame(fi):
     t = fi / FPS
@@ -168,9 +182,7 @@ def frame(fi):
     ImageDraw.Draw(c).ellipse((540 - 230 * sh_k, 1782, 540 + 230 * sh_k, 1822), fill=(74, 46, 39, int(38 * sh_k)))
     layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     # brazo con gesto (pieza original) en el lado izq de la imagen; manga espejo en el derecho; ambos al frente
-    character(layer, t, 540, 1800, head=sc['head'], head_pop=acting['pop'], arm_l=sc['arm_r'], arm_r='arm_manga_izq',
-              arm_l_ang=acting['arm'], arm_r_ang=acting['sleeve'], head_ang=acting['head_ang'],
-              head_dx=acting['head_dx'], blink=acting['blink'], boil_seed=boil, shadow=False)
+    draw_character(layer, sc, t, acting, boil)
     composite_transformed(c, layer, (540, 1800), sx=acting['sx'], sy=acting['sy'],
                           angle=acting['lean'], dy=acting['dy'])
     if 'mug' in sc['props']:
