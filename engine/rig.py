@@ -151,17 +151,21 @@ def emo_kind(head):
     return 'calmada'
 
 @functools.lru_cache(None)
-def piece2(name, scale=S2):
+def piece2(name, scale=None):
+    if scale is None: scale = S2 * ARM2_SCALE.get(name, 1.0)
     im = Image.open(P2 + name + '.png').convert('RGBA')
     if name == 'cuerpo_sin_cabeza':          # quita el cuellito: el cuello lo pone la cabeza, detrás del suéter
-        a = np.array(im); a[:BODY2_COLLAR_Y, 200:290, 3] = 0; im = Image.fromarray(a)
+        a = np.array(im); a[:BODY2_COLLAR_Y, 198:292, 3] = 0; im = Image.fromarray(a)
     if name.startswith('cabeza_'):            # el cuello se alarga hacia abajo para meterse bajo el cuello del suéter
         pass
     return im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
 
 # Anclas en coordenadas de la pieza SIN escalar (px de la plantilla)
-BODY2_COLLAR_Y = 54
-BODY2 = dict(foot=(222, 872), neck=(244, 66), sh_l=(138, 138), sh_r=(352, 138))
+BODY2_COLLAR_Y = 63            # todo lo de arriba (el cuellito del cuerpo) se borra
+# neck: dónde cae la base del cuello de la cabeza (oculta bajo el suéter -> cuello visible corto)
+BODY2 = dict(foot=(222, 872), neck=(244, 104), sh_l=(140, 122), sh_r=(352, 138))
+# el brazo recto de la plantilla viene largo: escalado para que la mano llegue a medio muslo
+ARM2_SCALE = {'brazo_recto_izq': 0.76, 'brazo_recto_der': 0.76}
 ARM2 = {   # pieza: pivote del hombro
     'brazo_recto_izq': lambda w, h: (w * 0.66, h * 0.05),
     'brazo_recto_der': lambda w, h: (w * 0.34, h * 0.05),
