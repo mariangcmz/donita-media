@@ -1,0 +1,102 @@
+[
+  {
+    "dia": "reel",
+    "id": "agentes-linkedin",
+    "musica": "musica/lofi_suave.wav",
+    "escenas": [
+      {
+        "dur": 3,
+        "head": "cabeza_emocionada",
+        "arm": "arm_senala",
+        "props": [
+          "nodes"
+        ],
+        "text": [
+          "Creé agentes de IA",
+          "para hacer",
+          "mi contenido."
+        ],
+        "hl": "mi contenido.",
+        "note": "qué ilusa"
+      },
+      {
+        "dur": 5,
+        "head": "cabeza_neutral",
+        "arm": "brazo_recto",
+        "estilo": "post",
+        "text": [
+          "¡Descubre cómo transformar",
+          "tu día con estos 5 tips",
+          "revolucionarios!"
+        ],
+        "hl": null
+      },
+      {
+        "dur": 3,
+        "head": "cabeza_esceptica",
+        "arm": "arm_baja_taza",
+        "text": [
+          "Eso no es mío.",
+          "Eso es un post",
+          "de LinkedIn."
+        ],
+        "hl": "de LinkedIn.",
+        "note": "ni yo me lo creo"
+      },
+      {
+        "dur": 3,
+        "head": "cabeza_cansada",
+        "arm": "arm_baja_taza",
+        "text": [
+          "Lo arreglé",
+          "a base de",
+          "regañarlos."
+        ],
+        "hl": "regañarlos.",
+        "note": "mija, diez veces"
+      },
+      {
+        "dur": 5,
+        "head": "cabeza_preocupada",
+        "arm": "brazo_recto",
+        "text": [
+          "Ahora solo uno",
+          "funciona. Y casi",
+          "le hago manita",
+          "de puerco."
+        ],
+        "hl": "de puerco.",
+        "note": "con cariño, eh"
+      },
+      {
+        "dur": 3,
+        "head": "cabeza_emocionada",
+        "arm": "arm_senala",
+        "props": [
+          "nodes"
+        ],
+        "text": [
+          "5 cosas para que",
+          "el lunes no me",
+          "coma. Ninguna es",
+          "levantarme a las 5."
+        ],
+        "hl": "levantarme a las 5."
+      },
+      {
+        "dur": 3,
+        "head": "cabeza_neutral",
+        "arm": "arm_alza_taza",
+        "props": [
+          "nodes"
+        ],
+        "text": [
+          "La IA no tiene",
+          "criterio.",
+          "Tú sí."
+        ],
+        "hl": "Tú sí."
+      }
+    ]
+  }
+]

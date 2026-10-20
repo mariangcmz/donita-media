@@ -34,33 +34,71 @@ F_TITLE = lambda: font('Nunito[wght].ttf', 86, 800)
 F_NOTE = lambda: font('Kalam-Bold.ttf', 58)
 F_HANDLE = lambda: font('Nunito[wght].ttf', 38, 700)
 
+def text_layout(sc):
+    """Tamaño y posición del bloque de texto. <=3 líneas: como siempre (86 px desde y=230).
+    4-5 líneas o líneas largas: se encoge para no tapar a la doñita."""
+    lines = sc['text']; n = len(lines)
+    size = 86 if n <= 3 else (72 if n == 4 else 62)
+    f = font('Nunito[wght].ttf', size, 800)
+    d = ImageDraw.Draw(Image.new('RGBA', (1, 1)))
+    widest = max(d.textlength(l, font=f) for l in lines)
+    if sc.get('estilo') == 'post':      # tarjeta de post: letra más chica, arriba del chongo
+        size = min(size, 64); f = font('Nunito[wght].ttf', size, 800)
+        widest = max(d.textlength(l, font=f) for l in lines)
+    if widest > 940:
+        size = int(size * 940 / widest); f = font('Nunito[wght].ttf', size, 800)
+    lh = int(size * 1.21)
+    y0 = 230 if n <= 3 else 170
+    if sc.get('estilo') == 'post': y0 = 200
+    return f, size, lh, y0
+
+def draw_post_card(c, sc, lt, y0, y1):
+    """Estilo 'post': el texto va dentro de una tarjeta blanca genérica de red social (sin logos)."""
+    k = ease_io(lt / 0.3)
+    if k <= 0: return
+    card = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(card)
+    x0, x1 = 60, W - 60; top = y0 - 112
+    d.rounded_rectangle((x0 + 6, top + 10, x1 + 6, y1 + 50), radius=34, fill=ESPRESSO + (40,))
+    d.rounded_rectangle((x0, top, x1, y1 + 40), radius=34, fill=(255, 255, 255, 245), outline=ESPRESSO, width=4)
+    d.ellipse((x0 + 34, top + 26, x0 + 104, top + 96), fill=(214, 206, 196))
+    d.rounded_rectangle((x0 + 124, top + 36, x0 + 380, top + 54), radius=9, fill=(214, 206, 196))
+    d.rounded_rectangle((x0 + 124, top + 68, x0 + 280, top + 82), radius=7, fill=(232, 226, 218))
+    card.putalpha(card.split()[3].point(lambda v: int(v * k)))
+    c.alpha_composite(card)
+
 def draw_text_block(c, sc, t):
     lt = t - sc['t0']
-    f = F_TITLE(); d = ImageDraw.Draw(c)
-    y = 230
+    f, size, lh, y0 = text_layout(sc); d = ImageDraw.Draw(c)
+    if sc.get('estilo') == 'post':
+        draw_post_card(c, sc, lt, y0, y0 + lh * len(sc['text']))
+    y = y0
     for i, line in enumerate(sc['text']):
         k = ease_out_back((lt - 0.12 * i) / 0.35)
-        if k <= 0: y += 104; continue
+        if k <= 0: y += lh; continue
         tw = d.textlength(line, font=f)
-        layer = Image.new('RGBA', (int(tw) + 40, 130), (0, 0, 0, 0)); ld = ImageDraw.Draw(layer)
+        layer = Image.new('RGBA', (int(tw) + 40, int(size * 1.5)), (0, 0, 0, 0)); ld = ImageDraw.Draw(layer)
         is_hl = sc['hl'] and sc['hl'] in line
         if is_hl:  # subrayado salmón tipo marcador, se dibuja de izq a der
             u = ease_io((lt - 0.12 * i - 0.25) / 0.4)
-            ld.rounded_rectangle((14, 66, 14 + (tw + 12) * u, 104), radius=10, fill=SALMON + (235,))
-        ld.text((20, 8), line, font=f, fill=ESPRESSO)
+            ld.rounded_rectangle((14, size * 0.77, 14 + (tw + 12) * u, size * 1.21), radius=10, fill=SALMON + (235,))
+        ld.text((20, size * 0.09), line, font=f, fill=ESPRESSO)
         s = 0.6 + 0.4 * k
         layer = layer.resize((max(1, int(layer.width * s)), max(1, int(layer.height * s))), Image.BICUBIC)
         c.alpha_composite(layer, (int(W / 2 - layer.width / 2), int(y + (1 - s) * 60)))
-        y += 104
+        y += lh
     if sc['note']:
         k = ease_out_back((lt - 0.7) / 0.3)
         if k > 0:
-            fn = F_NOTE(); tw = d.textlength(sc['note'], font=fn)
+            fn = font('Kalam-Bold.ttf', 50); tw = d.textlength(sc['note'], font=fn)
             layer = Image.new('RGBA', (int(tw) + 30, 100), (0, 0, 0, 0))
             ImageDraw.Draw(layer).text((10, 5), sc['note'], font=fn, fill=SALMON)
-            layer = layer.rotate(-3, expand=True, resample=Image.BICUBIC)
+            layer = layer.rotate(3, expand=True, resample=Image.BICUBIC)
             layer = layer.resize((max(1, int(layer.width * k)), max(1, int(layer.height * k))))
-            c.alpha_composite(layer, (W - layer.width - 70, y + 40))
+            pos = sc.get('note_pos') or ('margen' if KIT == 'v2' else 'abajo')
+            if pos == 'margen':   # margen izquierdo, a la altura del pecho: no tapa la cara ni los nodos
+                c.alpha_composite(layer, (max(24, 360 - layer.width), 625))
+            else:
+                c.alpha_composite(layer, (W - layer.width - 70, y + 40))
 
 NODES = [(0, 0), (120, -60), (230, 10), (190, 120), (60, 110)]
 EDGES = [(0, 1), (1, 2), (2, 3), (1, 4), (4, 3)]
