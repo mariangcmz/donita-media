@@ -1,0 +1,51 @@
+[
+ {"dia": "jueves", "id": "video-ia-caro",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Quise hacer mis", "videos con IA.", "Fácil, ¿no?"], "hl": "Fácil, ¿no?"},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["No me alcanzaba", "el plan. Y lo", "otro era carísimo."], "hl": "otro era carísimo."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Así que la animo", "con código y un", "kit de dibujitos."], "hl": "kit de dibujitos."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Sale más barato", "y la doñita", "es toda mía."], "hl": "es toda mía."}
+  ]},
+ {"dia": "viernes", "id": "alerta-no-corta",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["¿Te acuerdas de", "mi alerta de", "presupuesto?"], "hl": "presupuesto?"},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Ojo: la alerta", "avisa, pero", "no corta nada."], "hl": "no corta nada."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Si te pasas,", "el cobro sigue", "igualito."], "hl": "igualito."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Revísala seguido,", "mija. Avisar no", "es frenar."], "hl": "es frenar."}
+  ]},
+ {"dia": "sabado", "id": "brazos-chuecos",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Mi primer kit de", "la doñita llegó", "con un detallito."], "hl": "con un detallito."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Puros brazos", "derechos.", "Los dos."], "hl": "Los dos."},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["La doñita salió", "con los brazos", "bien chuecos."], "hl": "bien chuecos."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Así se construye", "en público:", "chueco y riendo."], "hl": "chueco y riendo."}
+  ]},
+ {"dia": "domingo", "id": "pedidos-whatsapp",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Antes mis pedidos", "vivían en el", "WhatsApp."], "hl": "WhatsApp."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Buscar un pedido", "era hacer scroll", "hasta marzo."], "hl": "hasta marzo.", "note": "(o abril)"},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Ahora cada pedido", "se guarda en", "Supabase."], "hl": "Supabase."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Y en Notion lo", "veo todo junto.", "Sin scroll."], "hl": "Sin scroll."}
+  ]},
+ {"dia": "lunes", "id": "reporte-6-marcas",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Mi sistema junta", "datos de 6 marcas.", "Sí, seis."], "hl": "Sí, seis."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Revisar cada una", "a mano sería", "otro trabajo."], "hl": "otro trabajo."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Cada día sale", "un reporte", "por marca. Solo."], "hl": "por marca. Solo."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Yo nomás leo", "con mi cafecito.", "Así sí."], "hl": "Así sí."}
+  ]},
+ {"dia": "martes", "id": "voz-abuelita",
+  "escenas": [
+   {"head": "head_emocionada", "arm": "arm_baja_taza", "text": ["¿Y por qué la", "doñita no habla?", "Te cuento."], "hl": "Te cuento."},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["Le probé voz", "de abuelita", "y no, eh."], "hl": "y no, eh.", "note": "(no tan ruca)"},
+   {"head": "head_cansada", "arm": "arm_baja_taza", "text": ["Por ahora", "se queda calladita.", "Con letreros."], "hl": "Con letreros."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Lo que sigue:", "le voy a dar voz", "con Gemini."], "hl": "con Gemini."}
+  ]},
+ {"dia": "miercoles", "id": "metricas-engine",
+  "escenas": [
+   {"head": "head_cansada", "arm": "arm_baja_taza", "props": ["laptop"], "text": ["Publico 7 videos", "a la semana.", "¿Cuál sirvió?"], "hl": "¿Cuál sirvió?"},
+   {"head": "head_estres", "arm": "arm_alza_taza", "shake": true, "text": ["La neta, todavía", "no sé por qué", "unos jalan más."], "hl": "unos jalan más."},
+   {"head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"], "text": ["Lo voy a", "automatizar: que", "me lo diga solo."], "hl": "me lo diga solo."},
+   {"head": "head_emocionada", "arm": "arm_alza_taza", "props": ["mug"], "text": ["Te cuento cómo", "me va. Aquí,", "en público."], "hl": "en público."}
+  ]}
+]
