@@ -18,3 +18,4 @@
 - Semana 1 (15–21 oct 2026): no-programar, make-fiasco, catalogo, tarjeta-google, detras-doñita, lista-super, recordatorios.
 - Extras: catalogo-parte2 (18 oct, 18:00), super-parte2 (21 oct, 18:00).
 - Semana 2 (22–28 oct 2026): video-ia-caro, alerta-no-corta, brazos-chuecos, pedidos-whatsapp, reporte-6-marcas, voz-abuelita, metricas-engine (idea a futuro, contada como "lo voy a hacer").
+- Carruseles editoriales (doodles): base-de-datos-catalogo (20 oct, 19:00), reporte-6-marcas (22 oct, 18:00), tarjeta-google (23 oct, 18:00).
