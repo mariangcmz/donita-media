@@ -20,6 +20,18 @@ cd engine && python3 render_week.py guiones/semana_XX.json ../semana_XX
 ~6 min por video; con 2 CPUs corre dos procesos en paralelo (pasando ids distintos).
 Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 
+## Kit del personaje (v2 por defecto)
+- `engine/pieces_v2/`: kit nuevo (oct 2026) — 6 cabezas, `cuerpo_sin_cabeza`, brazos `recto` / `taza` / `senala`.
+  `DONITA_KIT=v1` vuelve al kit anterior (`engine/pieces/`). `_plantilla_original.png` es la hoja fuente.
+- En v2 la cabeza va detrás del suéter (el cuello se mete bajo el cuello del suéter), luego cuerpo, luego brazos al frente.
+  Brazo de gesto en el lado derecho de la imagen (apunta hacia los `nodes`), brazo recto en el izquierdo.
+- `head` acepta: `cabeza_neutral | cabeza_cansada | cabeza_emocionada | cabeza_enojada | cabeza_preocupada | cabeza_esceptica`
+  (los nombres viejos siguen sirviendo: head_cansada→cansada, head_estres→preocupada, head_emocionada→emocionada).
+- `arm` acepta lo de siempre: `arm_baja_taza` (taza al frente), `arm_alza_taza` (alza la taza), `arm_senala`;
+  o en v2 también `brazo_recto` (brazo en reposo, sin taza).
+- Parpadeo v2: `python3 make_blinks_v2.py` (cansada y escéptica no parpadean: ya tienen párpado a media asta).
+- Los MP4 de `semana_01/` se quedan con el kit v1 (ya están programados en Metricool); no re-renderizar encima.
+
 ## Formato de guion (JSON)
 Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
 `head` (head_cansada | head_estres | head_emocionada), `arm` (arm_baja_taza | arm_alza_taza | arm_senala),
