@@ -61,6 +61,7 @@ follow-through (cabeza y manga con resorte), lean por emoción, parpadeo (`piece
   Si un tema es una idea a futuro, el guion lo dice así ("lo voy a automatizar", no "ya lo hice").
 - Si un video dice "mañana te enseño", el día siguiente debe ser esa segunda parte.
 - Paleta: crema #F4E8D7, espresso #4A2E27, salmón #E78668. Nada de logos de marcas en props.
+- Diseño bold: títulos y textos grandes, contraste fuerte (ver tokens del sistema de diseño). Antes de diseñar una pieza, usar las skills `estilos-diseno-grafico` y `buen-gusto-visual`.
 
 ## Programación en Metricool
 Marca `La Doñita Dev`, blogId `7429323`, zona America/Mexico_City.
