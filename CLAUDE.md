@@ -32,6 +32,11 @@ Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 - Parpadeo v2: `python3 make_blinks_v2.py` (cansada y escéptica no parpadean: ya tienen párpado a media asta).
 - Los MP4 de `semana_01/` se quedan con el kit v1 (Metricool los toma de esas URLs); no re-renderizar encima sin que Mariana lo pida.
 
+## Reels con clips del banco (videos de Gemini)
+- `banco/<tema>/NN_accion_emocion.mp4` + `engine/compose_clips.py guiones/clips_<tema>.json salida.mp4`.
+- Texto en modo bold (`grande`, por defecto en clips): Nunito 800 de 112/100/86 px según líneas; notitas Kalam 64 px al margen.
+- Recetas y reglas de reutilización: sistema de diseño "La Doñita Dev" → sección Banco de clips.
+
 ## Formato de guion (JSON)
 Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
 `head` (head_cansada | head_estres | head_emocionada), `arm` (arm_baja_taza | arm_alza_taza | arm_senala),

@@ -38,17 +38,23 @@ def text_layout(sc):
     """Tamaño y posición del bloque de texto. <=3 líneas: como siempre (86 px desde y=230).
     4-5 líneas o líneas largas: se encoge para no tapar a la doñita."""
     lines = sc['text']; n = len(lines)
-    size = 86 if n <= 3 else (72 if n == 4 else 62)
+    if sc.get('grande'):   # enfoque bold: letra realmente grande
+        size = 112 if n <= 2 else (100 if n == 3 else 86)
+    else:
+        size = 86 if n <= 3 else (72 if n == 4 else 62)
     f = font('Nunito[wght].ttf', size, 800)
     d = ImageDraw.Draw(Image.new('RGBA', (1, 1)))
     widest = max(d.textlength(l, font=f) for l in lines)
     if sc.get('estilo') == 'post':      # tarjeta de post: letra más chica, arriba del chongo
         size = min(size, 64); f = font('Nunito[wght].ttf', size, 800)
         widest = max(d.textlength(l, font=f) for l in lines)
-    if widest > 940:
+    if widest > 950 and sc.get('grande'):
+        size = int(size * 950 / widest); f = font('Nunito[wght].ttf', size, 800)
+    elif widest > 940:
         size = int(size * 940 / widest); f = font('Nunito[wght].ttf', size, 800)
     lh = int(size * 1.21)
     y0 = 230 if n <= 3 else 170
+    if sc.get('grande'): y0 = 120 if n >= 4 else 150
     if sc.get('estilo') == 'post': y0 = 200
     return f, size, lh, y0
 
@@ -89,7 +95,7 @@ def draw_text_block(c, sc, t):
     if sc['note']:
         k = ease_out_back((lt - 0.7) / 0.3)
         if k > 0:
-            fn = font('Kalam-Bold.ttf', 50); tw = d.textlength(sc['note'], font=fn)
+            fn = font('Kalam-Bold.ttf', 64 if sc.get('grande') else 50); tw = d.textlength(sc['note'], font=fn)
             layer = Image.new('RGBA', (int(tw) + 30, 100), (0, 0, 0, 0))
             ImageDraw.Draw(layer).text((10, 5), sc['note'], font=fn, fill=SALMON)
             layer = layer.rotate(3, expand=True, resample=Image.BICUBIC)

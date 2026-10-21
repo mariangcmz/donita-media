@@ -1,0 +1,18 @@
+{
+  "id": "pedidos-whatsapp-tip",
+  "musica": "musica/lofi_suave.wav",
+  "escenas": [
+    {"clip": "../../banco/reel_pedidos_whatsapp/01_hook_estres.mp4", "desde": 1.0, "dur": 3.5,
+     "text": ["¿Sigues copiando", "pedidos de WhatsApp", "a mano?"], "hl": "a mano?", "note": "mija, no."},
+    {"clip": "../../banco/reel_pedidos_whatsapp/02_problema_cansada.mp4", "desde": 0.5, "dur": 4,
+     "text": ["Tallas cruzadas,", "pedidos perdidos", "y el clásico", "¿cuántos eran?"], "hl": "¿cuántos eran?"},
+    {"clip": "../../banco/reel_pedidos_whatsapp/03_paso1_form.mp4", "desde": 3.0, "dur": 5,
+     "text": ["Paso 1:", "un Google Form con", "nombre, producto,", "cantidad y fecha."], "hl": "un Google Form con", "note": "es gratis"},
+    {"clip": "../../banco/reel_pedidos_whatsapp/04_paso2_sheets.mp4", "desde": 2.5, "dur": 5,
+     "text": ["Paso 2:", "en Respuestas, toca", "el ícono de Sheets."], "hl": "el ícono de Sheets.", "note": "cero código"},
+    {"clip": "../../banco/reel_pedidos_whatsapp/05_cambio.mp4", "desde": 3.5, "dur": 5,
+     "text": ["Cada pedido cae", "solito en su fila.", "Tú nomás mandas", "el link."], "hl": "solito en su fila."},
+    {"clip": "../../banco/reel_pedidos_whatsapp/06_cta_brindis.mp4", "desde": 3.0, "dur": 5,
+     "text": ["Guárdalo para", "tu próximo pedido."], "hl": "tu próximo pedido.", "note": "y sígueme, eh"}
+  ]
+}
