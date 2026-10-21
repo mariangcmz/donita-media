@@ -36,6 +36,8 @@ Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 - `banco/<tema>/NN_accion_emocion.mp4` + `engine/compose_clips.py guiones/clips_<tema>.json salida.mp4`.
 - Texto en modo bold (`grande`, por defecto en clips): Nunito 800 de 112/100/86 px según líneas; notitas Kalam 64 px al margen.
 - Recetas y reglas de reutilización: sistema de diseño "La Doñita Dev" → sección Banco de clips.
+- El banco es cerrado: lo ya generado se reutiliza, pero no se depende de generar video con IA. Lo diario se anima por código.
+- Ropa de la doñita: sudadera azul o suéter salmón, se pueden alternar.
 
 ## Formato de guion (JSON)
 Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
