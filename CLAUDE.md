@@ -4,64 +4,83 @@ Repo de Mariana (@ladonitadev). Aquí viven el motor de video y los videos publi
 Los videos se sirven públicos desde `raw.githubusercontent.com/mariangcmz/donita-media/main/...`
 y Metricool los descarga de ahí.
 
+## Fuente de verdad (leer antes de escribir o diseñar)
+Este repo no define la marca: la sigue. Si algo de aquí choca con estas fuentes, mandan ellas.
+1. **Skill `politica-editorial`**: qué se produce, cómo se decide y qué se rechaza. Manda sobre todo lo demás.
+   Documento completo y anexo de la marca (sección 10, fila "La Doñita Dev"):
+   https://claude.ai/artifact/3MQfaXvXPFxNUvkSzCfbij
+2. **Skill `donita-dev-contenido`**: posicionamiento, mezcla editorial, voz e identidad visual.
+3. **Sistema de diseño "La Doñita Dev"** (fondo blanco, cian): https://claude.ai/artifact/XxPXYC5eM4KFWyujRimKMy
+   Ojo: hay otro sistema con el mismo nombre (crema y salmón, CK1MGp12KbxdjtfdbsJDkc). Es el anterior; no se usa.
+Si las skills no están disponibles en la sesión, lee los dos links con las herramientas de docs y de Artifact.
+
 ## Estructura
 - `engine/` — rig de la doñita (Python + PIL + ffmpeg)
   - `rig.py` personaje por piezas, `make_video.py` escenas y texto, `render_week.py` render desde JSON
-  - `pieces/` PNGs del personaje, `fonts/` Nunito, Quicksand, Kalam (OFL)
+  - `pieces_v2/` PNGs del personaje, `fonts/` Nunito, Quicksand, Kalam, Space Mono (OFL)
   - `guiones/semana_XX.json` guiones por semana
 - `semana_XX/` — MP4 finales, nombres ASCII: `01_lunes.mp4` … `07_domingo.mp4`
 - `TEMAS.md` — banco de temas reales y lo ya publicado
+- `portadas/`, `carruseles/`, `editorial/` — piezas fijas ya hechas con el sistema nuevo
 
 ## Render
 ```
 pip install pillow numpy scipy --break-system-packages   # si faltan
 cd engine && python3 render_week.py guiones/semana_XX.json ../semana_XX
 ```
-~6 min por video; con 2 CPUs corre dos procesos en paralelo (pasando ids distintos).
-Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
+~4 min por video; con 2 CPUs corre dos procesos en paralelo (pasando ids distintos).
+`render_week.py` valida los guiones antes de renderizar y se detiene si algo no cabe: se acortan las
+palabras, nunca se baja la letra. Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
+
+## Estilo de video v3 (por defecto desde el 26 oct 2026)
+Implementa el "esqueleto que se repite" del sistema de diseño en 1080×1920:
+fondo blanco, una sola tinta espresso; etiqueta Space Mono arriba a la izquierda (y=300, abajo de la UI de
+Reels); titular Nunito Black en mayúsculas desde x=80 (y=400), de 150 a 180 px, máx. 3 líneas, palabra clave
+en bloque cian; bajada Quicksand 52 px en la columna izquierda (máx. 20 palabras); nota Kalam girada 5° al
+margen; la Doñita abajo a la derecha; @ladonitadev abajo a la izquierda; nodos salmón y cian en la esquina
+de arriba a la derecha solo cuando la escena trae `nodes`.
+Fondos por escena: `blanco` (default), `cian` (una cada 3 o 4), `espresso` (bitácora), `amarillo` (solo lead magnet).
+`DONITA_ESTILO=v1` vuelve al estilo anterior (crema, centrado): solo para re-renderizar algo viejo si Mariana lo pide.
+
+## Formato de guion (JSON)
+Lista de videos. Cada video: `dia`, `id`, `etiqueta` (obligatoria, ej. `"// fiasco · make"`,
+`"// bitácora · 12"`), opcionales `fondo`, `musica` (`musica/lofi_suave.wav`), y `escenas` (4). Cada escena:
+- `head`: `head_cansada | head_estres | head_emocionada` o en v2 `cabeza_neutral | cabeza_enojada | cabeza_esceptica …`
+- `arm`: `arm_baja_taza | arm_alza_taza | arm_senala | brazo_recto`
+- `text`: el titular, 1 a 3 renglones cortos (a 150 px caben ~9 letras en mayúsculas por renglón)
+- `hl`: la palabra clave que va en bloque cian; tiene que estar en el titular
+- opcionales: `bajada` (≤20 palabras, lo que explica), `note` (notita Kalam corta), `props` (`nodes` | `mug`),
+  `shake` (true en escenas de estrés), `fondo`, `dur` (segundos, default 3.4)
+Arco típico: 1) gancho/dolor 2) estrés o giro 3) solución (señala + nodes) 4) cierre (taza + mug).
+Ejemplo completo: `engine/guiones/prueba_v3.json`.
 
 ## Kit del personaje (v2 por defecto)
-- `engine/pieces_v2/`: kit nuevo (oct 2026) — 6 cabezas, `cuerpo_sin_cabeza`, brazos `recto` / `taza` / `senala`.
+- `engine/pieces_v2/`: 6 cabezas, `cuerpo_sin_cabeza`, brazos `recto` / `taza` / `senala`.
   `DONITA_KIT=v1` vuelve al kit anterior (`engine/pieces/`). `_plantilla_original.png` es la hoja fuente.
-- En v2 la cabeza va detrás del suéter (el cuello se mete bajo el cuello del suéter), luego cuerpo, luego brazos al frente.
-  Brazo de gesto en el lado derecho de la imagen (apunta hacia los `nodes`), brazo recto en el izquierdo.
-- `head` acepta: `cabeza_neutral | cabeza_cansada | cabeza_emocionada | cabeza_enojada | cabeza_preocupada | cabeza_esceptica`
-  (los nombres viejos siguen sirviendo: head_cansada→cansada, head_estres→preocupada, head_emocionada→emocionada).
-- `arm` acepta lo de siempre: `arm_baja_taza` (taza al frente), `arm_alza_taza` (alza la taza), `arm_senala`;
-  o en v2 también `brazo_recto` (brazo en reposo, sin taza).
-- Parpadeo v2: `python3 make_blinks_v2.py` (cansada y escéptica no parpadean: ya tienen párpado a media asta).
-- Los MP4 de `semana_01/` se quedan con el kit v1 (Metricool los toma de esas URLs); no re-renderizar encima sin que Mariana lo pida.
+- En v2 la cabeza va detrás del suéter, luego cuerpo, luego brazos al frente.
+- Parpadeo v2: `python3 make_blinks_v2.py` (cansada y escéptica no parpadean).
+- Los MP4 de `semana_01/` y `semana_02/` se quedan como están (Metricool los toma de esas URLs).
 
 ## Reels con clips del banco (videos de Gemini)
 - `banco/<tema>/NN_accion_emocion.mp4` + `engine/compose_clips.py guiones/clips_<tema>.json salida.mp4`.
-- Texto en modo bold (`grande`, por defecto en clips): Nunito 800 de 112/100/86 px según líneas; notitas Kalam 64 px al margen.
-- Recetas y reglas de reutilización: sistema de diseño "La Doñita Dev" → sección Banco de clips.
-- El banco es cerrado: lo ya generado se reutiliza, pero no se depende de generar video con IA. Lo diario se anima por código.
-- Ropa de la doñita: sudadera azul o suéter salmón, se pueden alternar.
-
-## Formato de guion (JSON)
-Lista de videos; cada uno: `dia`, `id`, `escenas` (4). Cada escena:
-`head` (head_cansada | head_estres | head_emocionada), `arm` (arm_baja_taza | arm_alza_taza | arm_senala),
-`text` (2-3 líneas, máx ~19 caracteres c/u), `hl` (texto de una línea a subrayar o null),
-opcionales: `note` (notita Kalam corta), `props` (laptop | nodes | mug), `shake` (true en escenas de estrés).
-Arco típico: 1) gancho/dolor 2) estrés o giro 3) solución (señala + nodes) 4) cierre (taza + mug).
+- PENDIENTE: `compose_clips.py` sigue con el estilo viejo. El sistema pide marco de clip (banda espresso arriba
+  con el titular, banda cian abajo con la bajada; el crema nunca toca el blanco). Hasta que se actualice,
+  no se programan Reels de clips.
+- El banco es cerrado: lo ya generado se reutiliza, pero no se genera video nuevo con IA.
 
 ## Animación (skill animacion-cartoon-cutout)
 La actuación vive en `performance()` de `make_video.py`: anticipación, squash & stretch con volumen constante,
-follow-through (cabeza y manga con resorte), lean por emoción, parpadeo (`pieces/*_blink.png`, se regeneran con
-`make_blinks.py`) y miradas. Antes de publicar cambios al rig corre
-`python3 qa_sheet.py guiones/semana_XX.json <id> /tmp/qa.png` y revisa la hoja (poses + siluetas + volumen ≤ 0.05).
+follow-through, lean por emoción, parpadeo y miradas. Movimiento tranquilo, nada de temblores rápidos.
+Antes de publicar cambios al rig corre `python3 qa_sheet.py guiones/semana_XX.json <id> /tmp/qa.png`.
 
-## Reglas de marca (no negociables)
-- Voz: mujer mexicana 35-40, cálida, irónica, cercana. "mija" a veces, no siempre. Nunca "pa'", siempre "para".
-- Cero lenguaje corporativo/de agencia: nada de "potencia", "revolucionario", "descubre", "sumérgete", "desbloquea", "transforma tu vida".
-- Cero entusiasmo falso. Humor cotidiano, vulnerabilidad, realismo.
-- Público: emprendedoras mexicanas; en segundo lugar jóvenes interesadas en programar.
-- **Honestidad:** solo historias que estén en `TEMAS.md` como reales. No inventar experiencias de Mariana.
-  Si un tema es una idea a futuro, el guion lo dice así ("lo voy a automatizar", no "ya lo hice").
+## Reglas propias del engine
+- **Honestidad:** solo historias que estén en `TEMAS.md` como reales. Ideas a futuro se cuentan como
+  "lo voy a hacer". Si una pieza necesita una experiencia de Mariana que no está, es pendiente, no se inventa.
 - Si un video dice "mañana te enseño", el día siguiente debe ser esa segunda parte.
-- Paleta: crema #F4E8D7, espresso #4A2E27, salmón #E78668. Nada de logos de marcas en props.
-- Diseño bold: títulos y textos grandes, contraste fuerte (ver tokens del sistema de diseño). Antes de diseñar una pieza, usar las skills `estilos-diseno-grafico` y `buen-gusto-visual`.
+- **Revisión del resultado real:** extrae con ffmpeg al menos un cuadro por escena (a mitad de escena) y uno
+  de entrada (t≈0.4 s) y MÍRALOS contra el sistema de diseño en tamaño de celular: legibilidad, jerarquía,
+  que nada se encime (nota, taza, bajada, Doñita) y tiempo de lectura. Si algo falla, corrige y re-renderiza
+  antes de programar.
 
 ## Programación en Metricool
 Marca `La Doñita Dev`, blogId `7429323`, zona America/Mexico_City.

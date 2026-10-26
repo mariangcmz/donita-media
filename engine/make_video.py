@@ -208,6 +208,8 @@ def draw_character(layer, sc, t, acting, boil=0, blink=True):
                   head_dx=acting['head_dx'], blink=blink and acting['blink'], boil_seed=boil, shadow=False)
 
 def frame(fi):
+    if ESTILO == 'v3':
+        return frame_v3(fi)
     t = fi / FPS
     sc = next(s for s in SCENES if s['t0'] <= t < s['t1'] + 1e-9)
     lt = t - sc['t0']
@@ -241,6 +243,177 @@ def frame(fi):
     # transición: corte con pequeño "flash" de papel
     if lt < 0.08 and sc['t0'] > 0:
         c.alpha_composite(Image.new('RGBA', (W, H), CREMA + (120,)))
+    return c.convert('RGB')
+
+# =====================================================================================
+# Estilo v3 (oct 2026): sistema de diseño "La Doñita Dev" — skill donita-dev-contenido.
+# Fondo blanco, una tinta (espresso), palabra clave en bloque cian, todo alineado a x=80,
+# etiqueta Space Mono arriba, titular Nunito Black en mayúsculas (150-180 px), la Doñita
+# abajo a la derecha, nota Kalam al margen y @ladonitadev abajo a la izquierda.
+# DONITA_ESTILO=v1 vuelve al estilo anterior (crema, texto centrado).
+# =====================================================================================
+import os
+ESTILO = os.environ.get('DONITA_ESTILO', 'v3')
+
+BLANCO = (255, 255, 255); CIAN = (18, 194, 233); AMARILLO = (255, 228, 92)
+FONDOS = {  # fondo: (color, tinta, bloque de la palabra clave, tinta dentro del bloque)
+    'blanco':   (BLANCO, ESPRESSO, CIAN, ESPRESSO),
+    'cian':     (CIAN, ESPRESSO, BLANCO, ESPRESSO),
+    'espresso': (ESPRESSO, BLANCO, CIAN, ESPRESSO),
+    'amarillo': (AMARILLO, ESPRESSO, BLANCO, ESPRESSO),  # solo lead magnet
+}
+MARGEN = 80
+Y_ETIQUETA = 300          # debajo de la zona de la UI de arriba de Reels/TikTok
+Y_TITULAR = 400
+ANCHO = W - 2 * MARGEN    # 920
+ANCHO_COL = 500           # columna izquierda (bajada y nota), libre de la Doñita
+TITULAR_MIN, TITULAR_MAX = 150, 180
+BAJADA_PX = 52
+DONITA_PIE = (720, 1745); DONITA_K = 0.66
+Y_USUARIO = 1650          # arriba de la UI de abajo
+
+def _f_titular(size): return font('Nunito[wght].ttf', size, 900)
+def _f_bajada(): return font('Quicksand[wght].ttf', BAJADA_PX, 600)
+def _f_mono(size): return font('SpaceMono-Bold.ttf', size)
+_D = ImageDraw.Draw(Image.new('RGBA', (1, 1)))
+
+def wrap(text, f, ancho):
+    lines, cur = [], ''
+    for w in text.split():
+        cand = (cur + ' ' + w).strip()
+        if cur and _D.textlength(cand, font=f) > ancho:
+            lines.append(cur); cur = w
+        else:
+            cur = cand
+    if cur: lines.append(cur)
+    return lines
+
+def titular_layout(lines):
+    """El titular más grande que quepa en 920 px, entre 150 y 180. Si no cabe a 150, el guion está largo."""
+    up = [l.upper() for l in lines]
+    for size in range(TITULAR_MAX, TITULAR_MIN - 1, -2):
+        f = _f_titular(size)
+        if max(_D.textlength(l, font=f) for l in up) <= ANCHO:
+            return up, f, size, int(size * 1.02)
+    return up, None, None, None
+
+def validar_v3(sc):
+    """Reglas bold del sistema: si algo no cabe, se acortan las palabras; la letra no baja."""
+    errs = []
+    up, f, size, lh = titular_layout(sc['text'])
+    if len(sc['text']) > 3: errs.append('titular de más de 3 líneas')
+    if f is None: errs.append('una línea del titular no cabe a 150 px: ' + max(up, key=len))
+    if sc.get('bajada'):
+        n = len(sc['bajada'].split())
+        if n > 20: errs.append(f'bajada de {n} palabras (máx. 20)')
+        if len(wrap(sc['bajada'], _f_bajada(), ANCHO_COL)) > 4: errs.append('bajada de más de 4 líneas')
+    if sc.get('hl') and not any(sc['hl'].upper() in l for l in up):
+        errs.append(f'la palabra clave "{sc["hl"]}" no está en el titular')
+    return errs
+
+def draw_nodos_v3(c, ox, oy, lt, tinta):
+    """Nodos salmón y cian unidos por líneas espresso, chicos, en la esquina libre de arriba a la derecha."""
+    pts = [(0, 0), (-70, 48), (62, 52), (14, 104)]
+    edges = [(0, 1), (0, 2), (2, 3)]
+    cols = [CIAN, SALMON, SALMON, CIAN]
+    rads = [20, 14, 14, 11]
+    d = ImageDraw.Draw(c)
+    for j, (a, b) in enumerate(edges):
+        u = ease_io((lt - 0.25 - 0.15 * j) / 0.3)
+        if u <= 0: continue
+        (x1, y1), (x2, y2) = pts[a], pts[b]
+        d.line([(ox + x1, oy + y1), (ox + x1 + (x2 - x1) * u, oy + y1 + (y2 - y1) * u)], fill=tinta, width=5)
+    for j, (x, y) in enumerate(pts):
+        k = ease_out_back((lt - 0.1 * j) / 0.3)
+        if k <= 0: continue
+        r = rads[j] * k
+        d.ellipse((ox + x - r, oy + y - r, ox + x + r, oy + y + r), fill=cols[j])
+
+def draw_texto_v3(c, sc, t, fondo):
+    lt = t - sc['t0']
+    bg, tinta, bloque, tinta_bloque = FONDOS[fondo]
+    d = ImageDraw.Draw(c)
+    # etiqueta (repetición: lo que reconoce el ojo en el grid)
+    if sc.get('etiqueta'):
+        d.text((MARGEN, Y_ETIQUETA), sc['etiqueta'], font=_f_mono(38), fill=tinta)
+    up, f, size, lh = titular_layout(sc['text'])
+    if f is None: f, size, lh = _f_titular(TITULAR_MIN), TITULAR_MIN, int(TITULAR_MIN * 1.02)
+    hl = sc['hl'].upper() if sc.get('hl') else None
+    y = Y_TITULAR
+    for i, line in enumerate(up):
+        k = ease_out_back((lt - 0.10 * i) / 0.32)
+        if k <= 0: y += lh; continue
+        tw = d.textlength(line, font=f)
+        layer = Image.new('RGBA', (int(tw) + 60, int(size * 1.25)), (0, 0, 0, 0)); ld = ImageDraw.Draw(layer)
+        x_txt = 20; fill = tinta
+        if hl and hl in line:
+            a = line.index(hl); x0 = x_txt + d.textlength(line[:a], font=f); x1 = x0 + d.textlength(hl, font=f)
+            u = ease_io((lt - 0.10 * i - 0.2) / 0.3)
+            top, bot = size * 0.10, size * 1.08
+            if u > 0:
+                ld.rectangle((x0 - 16, top, x0 - 16 + (x1 - x0 + 32) * u, bot), fill=bloque)
+            # el resto del renglón en tinta; la clave en la tinta del bloque
+            ld.text((x_txt, 0), line[:a], font=f, fill=tinta)
+            ld.text((x0, 0), hl, font=f, fill=tinta_bloque if u > 0.5 else tinta)
+            ld.text((x1, 0), line[a + len(hl):], font=f, fill=tinta)
+        else:
+            ld.text((x_txt, 0), line, font=f, fill=fill)
+        s = 0.7 + 0.3 * k   # crece desde el margen izquierdo: la alineación no se mueve
+        layer = layer.resize((max(1, int(layer.width * s)), max(1, int(layer.height * s))), Image.BICUBIC)
+        c.alpha_composite(layer, (MARGEN - int(x_txt * s), int(y + (1 - s) * size * 0.6)))
+        y += lh
+    y_fin = y
+    if sc.get('bajada'):
+        u = ease_io((lt - 0.45) / 0.3)
+        if u > 0:
+            fb = _f_bajada(); yb = y_fin + 40
+            lay = Image.new('RGBA', (W, 400), (0, 0, 0, 0)); ldb = ImageDraw.Draw(lay)
+            for j, l in enumerate(wrap(sc['bajada'], fb, ANCHO_COL)):
+                ldb.text((MARGEN, j * int(BAJADA_PX * 1.3)), l, font=fb, fill=tinta)
+            lay.putalpha(lay.split()[3].point(lambda v: int(v * u)))
+            c.alpha_composite(lay, (0, int(yb + 20 * (1 - u))))
+    if sc.get('note'):
+        k = ease_out_back((lt - 0.8) / 0.3)
+        if k > 0:
+            fn = font('Kalam-Bold.ttf', 64); tw = d.textlength(sc['note'], font=fn)
+            lay = Image.new('RGBA', (int(tw) + 30, 110), (0, 0, 0, 0))
+            ImageDraw.Draw(lay).text((10, 5), sc['note'], font=fn, fill=tinta)
+            lay = lay.rotate(5, expand=True, resample=Image.BICUBIC)
+            lay = lay.resize((max(1, int(lay.width * k)), max(1, int(lay.height * k))))
+            c.alpha_composite(lay, (MARGEN - 10, 1370))
+    d.text((MARGEN, Y_USUARIO), '@ladonitadev', font=_f_mono(32), fill=tinta)
+
+def frame_v3(fi):
+    t = fi / FPS
+    sc = next(s for s in SCENES if s['t0'] <= t < s['t1'] + 1e-9)
+    lt = t - sc['t0']
+    fondo = sc.get('fondo') or 'blanco'
+    bg, tinta = FONDOS[fondo][0], FONDOS[fondo][1]
+    c = Image.new('RGBA', (W, H), bg + (255,))
+    boil = fi // 4
+    if 'nodes' in sc['props']:
+        draw_nodos_v3(c, 930, 300, lt, tinta)
+    acting = performance(sc, t, lt)
+    # sombra plana al piso
+    sh_k = 1 - min(0.35, -acting['dy'] / 80)
+    px, py = DONITA_PIE
+    ImageDraw.Draw(c).ellipse((px - 150 * sh_k, py - 14, px + 150 * sh_k, py + 14), fill=ESPRESSO + (40,))
+    layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    draw_character(layer, sc, t, acting, boil)
+    # la Doñita a 0.66, con el pie en DONITA_PIE (abajo a la derecha)
+    k = DONITA_K
+    small = layer.resize((int(W * k), int(H * k)), Image.LANCZOS)
+    tmp = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    tmp.paste(small, (int(px - 540 * k), int(py - 1800 * k)), small)
+    composite_transformed(c, tmp, (px, py), sx=acting['sx'], sy=acting['sy'], angle=acting['lean'], dy=acting['dy'] * k)
+    if 'mug' in sc['props']:
+        m = piece('mug_mascota', 1.25)
+        hop = abs(math.sin(t * 3.5)) * 16
+        kk = ease_out_back(lt / 0.4)
+        paste_rot(c, m, (m.width / 2, m.height), (500, py - hop), 3 * math.sin(t * 3.5), sx=kk, sy=kk)
+    draw_texto_v3(c, sc, t, fondo)
+    if lt < 0.06 and sc['t0'] > 0:   # corte con destello del fondo
+        c.alpha_composite(Image.new('RGBA', (W, H), bg + (110,)))
     return c.convert('RGB')
 
 if __name__ == '__main__':

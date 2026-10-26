@@ -12,9 +12,20 @@ def load(video):
         dur = e.get('dur', SCENE_LEN)
         scenes.append(dict(t0=t, t1=t + dur, head=e['head'], arm_r=e['arm'], arm_l='arm_manga_izq',
                            text=e['text'], hl=e.get('hl'), note=e.get('note'), note_pos=e.get('note_pos'),
-                           estilo=e.get('estilo'), props=e.get('props', []), shake=e.get('shake', False)))
+                           estilo=e.get('estilo'), props=e.get('props', []), shake=e.get('shake', False),
+                           bajada=e.get('bajada'), fondo=e.get('fondo') or video.get('fondo'),
+                           etiqueta=e.get('etiqueta') or video.get('etiqueta')))
         t += dur
     return scenes
+
+def validar(video):
+    """Estilo v3: revisa las reglas bold antes de gastar minutos de render."""
+    if mv.ESTILO != 'v3': return []
+    errs = []
+    if not video.get('etiqueta'): errs.append('falta "etiqueta" del video (ej. "// fiasco · make")')
+    for i, sc in enumerate(load(video), 1):
+        errs += [f'escena {i}: {e}' for e in mv.validar_v3(sc)]
+    return errs
 
 def audio_input(video, dur):
     """Música de fondo si el guion trae "musica" (ruta relativa a engine/), si no, silencio."""
@@ -41,6 +52,12 @@ if __name__ == '__main__':
     src, outdir, *ids = sys.argv[1:]
     os.makedirs(outdir, exist_ok=True)
     videos = json.load(open(src))
+    malos = {v['id']: validar(v) for v in videos if (not ids or v['id'] in ids)}
+    malos = {k: e for k, e in malos.items() if e}
+    if malos:
+        for k, e in malos.items():
+            print(f'[{k}]', *e, sep='\n  - ')
+        sys.exit('Guiones fuera del sistema de diseño: acorta las palabras (la letra no baja de 150 px).')
     for i, v in enumerate(videos, 1):
         if ids and v['id'] not in ids:
             continue

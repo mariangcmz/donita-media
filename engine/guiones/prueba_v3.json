@@ -1,0 +1,32 @@
+[
+  {
+    "dia": "prueba",
+    "id": "make-fiasco-v3",
+    "etiqueta": "// fiasco · make",
+    "musica": "musica/lofi_suave.wav",
+    "escenas": [
+      {
+        "head": "head_cansada", "arm": "arm_baja_taza",
+        "text": ["PROBÉ", "MAKE", "GRATIS"], "hl": "GRATIS",
+        "bajada": "Quería juntar las métricas de mis cuentas sin copiar y pegar."
+      },
+      {
+        "head": "head_estres", "arm": "arm_alza_taza", "shake": true,
+        "text": ["SE ACABÓ", "EN NADA"], "hl": "EN NADA",
+        "bajada": "Los créditos gratis se terminaron de inmediato.",
+        "note": "y yo bien confiada"
+      },
+      {
+        "head": "head_emocionada", "arm": "arm_senala", "props": ["nodes"],
+        "text": ["ME PASÉ A", "SUPABASE"], "hl": "SUPABASE",
+        "bajada": "Ahí junto los datos de mis seis marcas y sale un reporte diario por marca."
+      },
+      {
+        "head": "head_cansada", "arm": "arm_alza_taza", "props": ["mug"],
+        "text": ["LEE LA", "LETRA", "CHIQUITA"], "hl": "CHIQUITA",
+        "bajada": "Antes de armar todo, revisa cuántos créditos trae el plan gratis.",
+        "note": "mija, de verdad"
+      }
+    ]
+  }
+]
