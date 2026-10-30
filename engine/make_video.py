@@ -258,7 +258,7 @@ ESTILO = os.environ.get('DONITA_ESTILO', 'v3')
 BLANCO = (255, 255, 255); CIAN = (18, 194, 233); AMARILLO = (255, 228, 92)
 FONDOS = {  # fondo: (color, tinta, bloque de la palabra clave, tinta dentro del bloque)
     'blanco':   (BLANCO, ESPRESSO, CIAN, ESPRESSO),
-    'cian':     (CIAN, ESPRESSO, BLANCO, ESPRESSO),
+    'cian':     (CIAN, ESPRESSO, ESPRESSO, CIAN),     # bloque espresso con letra cian (sistema)
     'espresso': (ESPRESSO, BLANCO, CIAN, ESPRESSO),
     'amarillo': (AMARILLO, ESPRESSO, BLANCO, ESPRESSO),  # solo lead magnet
 }
@@ -270,7 +270,7 @@ ANCHO_COL = 500           # columna izquierda (bajada y nota), libre de la Doñi
 TITULAR_MIN, TITULAR_MAX = 150, 180
 BAJADA_PX = 52
 DONITA_PIE = (720, 1745); DONITA_K = 0.66
-Y_USUARIO = 1650          # arriba de la UI de abajo
+Y_USUARIO = 1630          # token reel-usuario-top
 
 def _f_titular(size): return font('Nunito[wght].ttf', size, 900)
 def _f_bajada(): return font('Quicksand[wght].ttf', BAJADA_PX, 600)

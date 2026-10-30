@@ -33,13 +33,14 @@ cd engine && python3 render_week.py guiones/semana_XX.json ../semana_XX
 palabras, nunca se baja la letra. Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 
 ## Estilo de video v3 (por defecto desde el 26 oct 2026)
-Implementa el "esqueleto que se repite" del sistema de diseño en 1080×1920:
-fondo blanco, una sola tinta espresso; etiqueta Space Mono arriba a la izquierda (y=300, abajo de la UI de
-Reels); titular Nunito Black en mayúsculas desde x=80 (y=400), de 150 a 180 px, máx. 3 líneas, palabra clave
-en bloque cian; bajada Quicksand 52 px en la columna izquierda (máx. 20 palabras); nota Kalam girada 5° al
-margen; la Doñita abajo a la derecha; @ladonitadev abajo a la izquierda; nodos salmón y cian en la esquina
-de arriba a la derecha solo cuando la escena trae `nodes`.
-Fondos por escena: `blanco` (default), `cian` (una cada 3 o 4), `espresso` (bitácora), `amarillo` (solo lead magnet).
+Las medidas del Reel viven en el sistema de diseño: componente `ReelAnimado`, sección "Reel animado" del
+README y los tokens `reel-*` (léelos con Artifact read en `project/components/ReelAnimado/README.md`).
+`engine/make_video.py` (`frame_v3`) los implementa; si el sistema cambia, se ajusta el motor, no al revés.
+Resumen: fondo blanco, tinta espresso, todo en x=80 dentro de la franja segura y=240…1680; etiqueta Space Mono
+en y=300; titular Nunito Black en mayúsculas en y=400, de 150 a 180 px, máx. 3 líneas, clave en bloque cian
+(sobre fondo cian: bloque espresso con letra cian); bajada 52 px en la columna izquierda de 500 px; nota Kalam;
+la Doñita abajo a la derecha; @ladonitadev en y=1630.
+Fondos por escena: `blanco` (default), `cian` (una o dos por semana), `espresso` (bitácora), `amarillo` (solo lead magnet).
 `DONITA_ESTILO=v1` vuelve al estilo anterior (crema, centrado): solo para re-renderizar algo viejo si Mariana lo pide.
 
 ## Formato de guion (JSON)
