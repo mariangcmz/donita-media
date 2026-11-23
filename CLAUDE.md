@@ -1,27 +1,64 @@
 # La Doñita Dev — content engine
 
-Repo de Mariana (@ladonitadev). Aquí viven el motor de video y los videos publicados.
+Repo de Mariana (@ladonitadev). Aquí viven los videos publicados y el motor de video en Python.
 Los videos se sirven públicos desde `raw.githubusercontent.com/mariangcmz/donita-media/main/...`
 y Metricool los descarga de ahí.
 
 ## Fuente de verdad (leer antes de escribir o diseñar)
 Este repo no define la marca: la sigue. Si algo de aquí choca con estas fuentes, mandan ellas.
 1. **Skill `politica-editorial`**: qué se produce, cómo se decide y qué se rechaza. Manda sobre todo lo demás.
+   Su sección "Qué skills lee cada quien" dice qué más lee cada agente.
    Documento completo y anexo de la marca (sección 10, fila "La Doñita Dev"):
    https://claude.ai/artifact/3MQfaXvXPFxNUvkSzCfbij
-2. **Skill `donita-dev-contenido`**: posicionamiento, mezcla editorial, voz e identidad visual.
-3. **Sistema de diseño "La Doñita Dev"** (fondo blanco, cian): https://claude.ai/artifact/XxPXYC5eM4KFWyujRimKMy
-   Ojo: hay otro sistema con el mismo nombre (crema y salmón, CK1MGp12KbxdjtfdbsJDkc). Es el anterior; no se usa.
-Si las skills no están disponibles en la sesión, lee los dos links con las herramientas de docs y de Artifact.
+2. **`BRAND_CONTEXT.md` del engine** (copia en Drive: `Doñita dev/motor-guionista/`): voz, pilares, prohibidos,
+   paleta y fuentes. En temas de marca manda sobre la skill y sobre este archivo.
+3. **Skill `donita-dev-contenido`**: posicionamiento, mezcla editorial, voz e identidad visual. Resume el punto 2.
+4. **Sistema de diseño "La Doñita Dev"**, Dark Editorial Dev: https://claude.ai/artifact/XxPXYC5eM4KFWyujRimKMy
+   Fondo berenjena #2b1847, nude y ámbar en contenedores, fuego #f9661d de acento. Noto Serif Display en
+   titulares y Space Mono en cuerpo y etiquetas.
+   Retirados, no se usan en piezas nuevas: el sistema blanco y cian de octubre de 2026 (Nunito, Quicksand, Kalam)
+   y el crema y salmón (CK1MGp12KbxdjtfdbsJDkc).
+Si las skills no están en la sesión, sigue la sección "Skills que lee cada agente".
+
+## Skills que lee cada agente
+Aplica a cualquier agente que trabaje en este repo, en la nube o en la computadora de Mariana.
+Leer la skill completa antes de trabajar es obligatorio. Con leer su descripción no alcanza.
+
+**Dónde están.** Son skills de la cuenta de Claude de Mariana y se cargan por nombre con la herramienta Skill.
+Si tu sesión no las tiene, búscalas en `.claude/skills/<nombre>/SKILL.md` de este proyecto y después en
+`~/.claude/skills/<nombre>/SKILL.md`. Si no aparece, no trabajes de memoria ni la reconstruyas: dilo en la
+entrega ("no pude leer <skill>") y detén esa pieza.
+
+| Trabajo | Lee siempre, en este orden | Lee si aplica |
+|---|---|---|
+| Cualquiera | `politica-editorial`, `donita-dev-contenido` | |
+| Ideas | `lenguaje-de-audiencia` | `marketing-psychology` |
+| Guion | `taller-de-guiones`, `hooks-virales`, `humanizar-texto` | `personajes-y-series` (la Doñita es personaje recurrente) |
+| Arte | `buen-gusto-visual` | `estilos-diseno-grafico`, `canvas-design`, `frontend-design` |
+| Video | `editora-de-video`, `hooks-virales`, `animacion-cartoon-cutout` | `ahorro-creditos-video-ia` |
+
+En la entrega, di en una línea qué skills leíste.
+
+## Estado del motor de este repo (leer antes de renderizar)
+`engine/make_video.py` (`frame_v3`) pinta el sistema blanco y cian con Nunito y Kalam. Ese sistema quedó
+retirado. El vigente es Dark Editorial Dev, confirmado por Mariana el 14 de noviembre de 2026.
+Los Reels de `reels/` del 7 y del 17 de noviembre de 2026 ya están en el sistema vigente y no salieron de este motor.
+- PENDIENTE: migrar `frame_v3` y `engine/fonts/` a Dark Editorial Dev.
+- Hasta entonces no se renderiza ni se programa ninguna pieza nueva con este motor.
+- Las secciones "Render", "Estilo de video v3" y "Formato de guion" describen el motor como está hoy. Sirven
+  para migrarlo, o para re-renderizar una pieza vieja si Mariana lo pide.
 
 ## Estructura
-- `engine/` — rig de la doñita (Python + PIL + ffmpeg)
+- `engine/` — rig de la doñita (Python + PIL + ffmpeg). Sigue en el estilo v3, ya retirado.
   - `rig.py` personaje por piezas, `make_video.py` escenas y texto, `render_week.py` render desde JSON
   - `pieces_v2/` PNGs del personaje, `fonts/` Nunito, Quicksand, Kalam, Space Mono (OFL)
   - `guiones/semana_XX.json` guiones por semana
 - `semana_XX/` — MP4 finales, nombres ASCII: `01_lunes.mp4` … `07_domingo.mp4`
+- `reels/` — Reels sueltos ya publicados
+- `kanguro/` — piezas de Kanguro Corp. Es otra marca: su skill es `kanguro-direccion`
 - `TEMAS.md` — banco de temas reales y lo ya publicado
-- `portadas/`, `carruseles/`, `editorial/` — piezas fijas ya hechas con el sistema nuevo
+- `portadas/`, `carruseles/`, `editorial/` — piezas fijas ya hechas. Las de octubre de 2026 pueden estar en el
+  sistema blanco y cian: revísalas antes de reutilizar alguna.
 
 ## Render
 ```
@@ -32,11 +69,11 @@ cd engine && python3 render_week.py guiones/semana_XX.json ../semana_XX
 `render_week.py` valida los guiones antes de renderizar y se detiene si algo no cabe: se acortan las
 palabras, nunca se baja la letra. Después renombra a ASCII (`01_lunes.mp4`…), `git add`, commit y push.
 
-## Estilo de video v3 (por defecto desde el 26 oct 2026)
-Las medidas del Reel viven en el sistema de diseño: componente `ReelAnimado`, sección "Reel animado" del
-README y los tokens `reel-*` (léelos con Artifact read en `project/components/ReelAnimado/README.md`).
-`engine/make_video.py` (`frame_v3`) los implementa; si el sistema cambia, se ajusta el motor, no al revés.
-Resumen: fondo blanco, tinta espresso, todo en x=80 dentro de la franja segura y=240…1680; etiqueta Space Mono
+## Estilo de video v3 (retirado; fue el default desde el 26 oct 2026)
+`engine/make_video.py` (`frame_v3`) implementa la versión de octubre de 2026 del sistema de diseño. El sistema
+cambió y el motor no. Al migrarlo, las medidas del Reel se leen del sistema vigente (componente `ReelAnimado`,
+con Artifact read en `project/components/ReelAnimado/README.md`): se ajusta el motor, no al revés.
+Resumen de lo que hace hoy: fondo blanco, tinta espresso, todo en x=80 dentro de la franja segura y=240…1680; etiqueta Space Mono
 en y=300; titular Nunito Black en mayúsculas en y=400, de 150 a 180 px, máx. 3 líneas, clave en bloque cian
 (sobre fondo cian: bloque espresso con letra cian); bajada 52 px en la columna izquierda de 500 px; nota Kalam;
 la Doñita abajo a la derecha; @ladonitadev en y=1630.
@@ -64,9 +101,9 @@ Ejemplo completo: `engine/guiones/prueba_v3.json`.
 
 ## Reels con clips del banco (videos de Gemini)
 - `banco/<tema>/NN_accion_emocion.mp4` + `engine/compose_clips.py guiones/clips_<tema>.json salida.mp4`.
-- PENDIENTE: `compose_clips.py` sigue con el estilo viejo. El sistema pide marco de clip (banda espresso arriba
-  con el titular, banda cian abajo con la bajada; el crema nunca toca el blanco). Hasta que se actualice,
-  no se programan Reels de clips.
+- PENDIENTE: `compose_clips.py` sigue con el estilo viejo. El sistema vigente pide marco de clip: banda berenjena
+  arriba con el titular y banda fuego abajo con la bajada; el crema nunca va pegado al nude. Hasta que se
+  actualice, no se programan Reels de clips.
 - El banco es cerrado: lo ya generado se reutiliza, pero no se genera video nuevo con IA.
 
 ## Animación (skill animacion-cartoon-cutout)
@@ -81,10 +118,13 @@ Antes de publicar cambios al rig corre `python3 qa_sheet.py guiones/semana_XX.js
 - **Revisión del resultado real:** extrae con ffmpeg al menos un cuadro por escena (a mitad de escena) y uno
   de entrada (t≈0.4 s) y MÍRALOS contra el sistema de diseño en tamaño de celular: legibilidad, jerarquía,
   que nada se encime (nota, taza, bajada, Doñita) y tiempo de lectura. Si algo falla, corrige y re-renderiza
-  antes de programar.
+  antes de programar. Aplica además la revisión del render de `editora-de-video` (su punto 10) y la
+  inspección de `buen-gusto-visual`.
 
 ## Programación en Metricool
 Marca `La Doñita Dev`, blogId `7429323`, zona America/Mexico_City.
-Un post por día a las 10:00, redes: instagram (REEL, isAiGenerated true), tiktok (isAigc true, sin autoAddMusic: no se permite con video),
+Cuántas piezas van por semana lo marca "Estado del engine" (ver `politica-editorial`); ya no es un post diario.
+La pieza se carga como borrador y se programa cuando Mariana la aprueba.
+Hora habitual 10:00, redes: instagram (REEL, isAiGenerated true), tiktok (isAigc true, sin autoAddMusic: no se permite con video),
 youtube (type short, title con #shorts, madeForKids false), facebook (REEL).
 Copy: 2-3 frases en la voz de la marca + 4-5 hashtags, siempre #ladonitadev.
